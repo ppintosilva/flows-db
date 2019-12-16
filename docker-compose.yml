@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+
+  db:
+    image: timescale/timescaledb-postgis:latest-pg11
+    environment:
+      POSTGRES_USER_FILE: /run/secrets/username_secret
+      POSTGRES_PASSWORD_FILE: /run/secrets/password_secret      
+      # use of subdir recommended when working with filesystem mountpoints
+      PGDATA: /var/lib/postgresql/data/pgdata
+    secrets:
+      - username_secret
+      - password_secret
+    ports:
+      - 5432:5432
+    volumes:
+      - type: volume
+        source: pgdata
+        target: /var/lib/postgresql/data/pgdata
+        volume:
+          nocopy: true
+      - type: bind
+        source: ./scripts
+        target: /opt/flows18/scripts/
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+
+volumes:
+  pgdata:
+
+secrets:
+  username_secret:
+    file: .user
+  password_secret:
+    file: .pass
