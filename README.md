@@ -16,31 +16,37 @@
 
 - `docker-compose.yml` sets up
 
-## Initiating and populating the database
+## Starting the database
+
+```bash
+## Init swarm
+docker swarm init
+
+## Deploy the containers
+docker stack deploy -c docker-compose.yml flows18
+```
+
+## Populating the database
 
 The database data is stored in docker volume `flows_pgdata`,
 so that application and data remain decoupled.
 
 ```bash
-export DBNAME=flows18
-export DATA_DIR=... # Required by the makefile
-export USERNAME=...
 
-## Init swarm
-docker swarm init
+# Postgres envir variables
+export PGHOST=localhost
+export PGUSER=...
+export PGPASSWORD=...
+# Required to populate the database
+export DATA_DIR=...
 
-## Deploy the containers
-docker stack deploy -c docker-compose.yml $DBNAME
-
-## Create the database
-### (if psql is available in host machine)
-
-psql -h localhost -U $USERNAME -f scripts/create_db.sql
+## Create the database (requires libpq on host, but can be done via docker too)
+psql -f scripts/create_db.sql
 
 ## Populate the database
 make populate
 
-## Extend the database
+## Run additional aggregation queries
 
 ```
 
@@ -48,5 +54,5 @@ make populate
 
 ```bash
 ## Shutdown the containers
-docker stack rm $DBNAME
+docker stack rm flows18
 ```
