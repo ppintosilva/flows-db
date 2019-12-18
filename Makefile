@@ -1,7 +1,8 @@
 TIMECOPY_BIN 	:= $(GOPATH)/bin/timescaledb-parallel-copy
-USERNAME		:= `cat $(.user)`
 
-DBNAME			:= flows18
+PGHOST			:= localhost
+PGDB			:= flows18
+PGPORT			:= 5432
 
 FLOWS_DIR		:= $(DATA_DIR)/flows
 FLOWS_5MIN_DIR  := $(FLOWS_DIR)/fivemin
@@ -36,10 +37,14 @@ FLOWS_DAY_STATUS	:= 	$(patsubst $(FLOWS_DAY_DIR)/%.csv, \
 
 FLOWS_WEEK_STATUS	:= $(STATUS_DIR)/weekly_flows.ok
 
+CONNECTION_STRING	:= "host=$(PGHOST) port=$(PGPORT) user=$(PGUSER) password=$(PGPASSWORD) sslmode=disable"
+
 FLAGS_COPY	:= \
 --workers 2 \
---reporting-period 30s \
---db-name $(DBNAME)
+--reporting-period 10s \
+--connection $(CONNECTION_STRING) \
+--skip-header \
+--db-name $(PGDB)
 
 # ============================= #
 # ============================= #
@@ -47,7 +52,7 @@ FLAGS_COPY	:= \
 define populate-csv
 	$(TIMECOPY_BIN) \
 	$(FLAGS_COPY) \
-	--table-name ${1} \
+	--table ${1} \
 	--file $^
 endef
 
@@ -73,19 +78,19 @@ $(call check_defined, DATA_DIR, directory containing the flow data)
 $(TIMECOPY_BIN) :
 
 $(STATUS_DIR)/fivemin/%.ok : $(FLOWS_5MIN_DIR)/%.csv
-	$(call populate-csv,od-05min)
+	$(call populate-csv,od_05min)
 
 $(STATUS_DIR)/fifteenmin/%.ok : $(FLOWS_15MIN_DIR)/%.csv
-	$(call populate-csv,od-15min)
+	$(call populate-csv,od_15min)
 
 $(STATUS_DIR)/hourly/%.ok : $(FLOWS_HOUR_DIR)/%.csv
-	$(call populate-csv,od-1hour)
+	$(call populate-csv,od_1hour)
 
 $(STATUS_DIR)/daily/%.ok : $(FLOWS_DAY_DIR)/%.csv
-	$(call populate-csv,od-24hours)
+	$(call populate-csv,od_24hours)
 
 $(FLOWS_WEEK_STATUS) : $(FLOWS_WEEK)
-	$(call populate-csv,od-7days)
+	$(call populate-csv,od_7days)
 
 populate: $(TIMECOPY_BIN) $(FLOWS_5MIN_STATUS) $(FLOWS_15MIN_STATUS) \
 		  $(FLOWS_HOUR_STATUS) $(FLOWS_DAY_STATUS) $(FLOWS_WEEK_STATUS)
