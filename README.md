@@ -1,4 +1,4 @@
-# Bringing the Tyne and Wear 2018 traffic flows dataset to TimescaleDB
+# The Tyne and Wear 2018 traffic flows database
 
 ## Requirements
 
@@ -6,15 +6,18 @@
 - docker
 - timescaledb-parallel-copy (requires go)
 - psql (libpq)
+- pipenv
 
 **Docker Images**
 - postgres
 - timescale/timescaledb:latest-pg11
 - adminer
 
-## Files
+## Environment
 
-- `docker-compose.yml` sets up
+- Write down your postgres **username** and **password** on the files `.user` and `.password`, respectively.
+- (modify `export_env.sh` if necessary)
+- `source export_env.sh`
 
 ## Starting the database
 
@@ -28,26 +31,20 @@ docker stack deploy -c docker-compose.yml flows18
 
 ## Populating the database
 
-The database data is stored in docker volume `flows_pgdata`,
-so that application and data remain decoupled.
+The database data is stored in the named docker volume `flows_pgdata`,
+so that the application and data remain decoupled.
 
 ```bash
-
-# Postgres envir variables
-export PGHOST=localhost
-export PGUSER=...
-export PGPASSWORD=...
-# Required to populate the database
-export DATA_DIR=...
-
 ## Create the database (requires libpq on host, but can be done via docker too)
 psql -f scripts/create_db.sql
 
 ## Populate the database
 make populate
 
-## Run additional aggregation queries
+## Expand
+make expand
 
+## Run additional aggregation queries
 ```
 
 ## Shutting down

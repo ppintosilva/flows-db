@@ -1,0 +1,50 @@
+INSERT INTO
+  {{ table }} (o,d,t,flow,mean_avspeed,sd_avspeed,skew_avspeed)
+  (
+    SELECT
+        combinations.o
+      , combinations.d
+      , combinations.t
+      , 0 AS flow
+      , NULL AS mean_avspeed
+      , NULL AS sd_avspeed
+      , NULL AS skew_avspeed
+    FROM
+    (
+      SELECT
+          y.o
+        , y.d
+        , x.t
+      FROM
+        (
+          SELECT
+            t::timestamp
+          FROM
+            generate_series(
+                timestamp (SELECT MIN(t) FROM {{ table }})
+              , timestamp (SELECT MAX(t) FROM {{ table }})
+              , interval  {{ frequency }})
+            t(x)
+        ) AS x
+      CROSS JOIN
+        (
+          SELECT DISTINCT
+            o,d
+          FROM
+            {{ table }}
+        ) AS y
+    ) AS combinations
+-- ANTI JOIN (select ((o,d),t) combinations that do not show up in the data)
+    WHERE NOT EXISTS
+      (
+        SELECT
+          o,d,t
+        FROM
+          {{ table }} AS data
+        WHERE
+          combinations.o = data.o
+          AND combinations.d = data.d
+          AND combinations.t = data.t
+      )
+  )
+;
