@@ -1,4 +1,3 @@
 data*
-.pass
-.user
+.env
 .go/

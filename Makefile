@@ -1,9 +1,5 @@
 TIMECOPY_BIN 	:= $(GOPATH)/bin/timescaledb-parallel-copy
 
-PGHOST			:= localhost
-PGDB			:= flows18
-PGPORT			:= 5432
-
 FLOWS_DIR		:= $(DATA_DIR)/flows
 FLOWS_5MIN_DIR  := $(FLOWS_DIR)/fivemin
 FLOWS_15MIN_DIR	:= $(FLOWS_DIR)/fifteenmin
@@ -44,7 +40,7 @@ FLAGS_COPY	:= \
 --reporting-period 10s \
 --connection $(CONNECTION_STRING) \
 --skip-header \
---db-name $(PGDB)
+--db-name $(PGDATABASE)
 
 # ============================= #
 # ============================= #
@@ -72,8 +68,13 @@ __check_defined = \
 # ============================= #
 # ============================= #
 
-$(call check_defined, GOPATH, directory containing the flow data)
-$(call check_defined, DATA_DIR, directory containing the flow data)
+$(call check_defined,GOPATH,directory containing the flow data)
+$(call check_defined,DATA_DIR,directory containing the flow data)
+$(call check_defined,PGUSER,postgres username)
+$(call check_defined,PGPASSWORD,postgres password)
+$(call check_defined,PGHOST,postgres host)
+$(call check_defined,PGPORT,postgres host)
+$(call check_defined,PGDATABASE,postgres database name)
 
 $(TIMECOPY_BIN) :
 

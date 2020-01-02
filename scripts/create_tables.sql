@@ -1,8 +1,3 @@
-CREATE DATABASE flows18;
-
--- Connect to the database
-\c flows18;
-
 CREATE TABLE od_05min
 (
   o INTEGER NOT NULL,

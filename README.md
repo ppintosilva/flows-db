@@ -15,9 +15,9 @@
 
 ## Environment
 
-- Write down your postgres **username** and **password** on the files `.user` and `.password`, respectively.
-- (modify `export_env.sh` if necessary)
-- `source export_env.sh`
+- `cp .default_env .env`
+- Fill in the blank variables in `.env` and modify existing ones if necessary
+- Parse the `.env` file using bash: `export $(egrep -v '^#' .env | xargs)`
 
 ## Starting the database
 
@@ -26,7 +26,7 @@
 docker swarm init
 
 ## Deploy the containers
-docker stack deploy -c docker-compose.yml flows18
+docker stack deploy -c docker-compose.yml $(PGDATABASE)
 ```
 
 ## Populating the database
@@ -36,7 +36,7 @@ so that the application and data remain decoupled.
 
 ```bash
 ## Create the database (requires libpq on host, but can be done via docker too)
-psql -f scripts/create_db.sql
+psql -f scripts/create_tables.sql
 
 ## Populate the database
 make populate
@@ -51,5 +51,5 @@ make expand
 
 ```bash
 ## Shutdown the containers
-docker stack rm flows18
+docker stack rm $(PGDATABASE)
 ```

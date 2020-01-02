@@ -5,13 +5,11 @@ services:
   db:
     image: timescale/timescaledb:latest-pg11
     environment:
-      POSTGRES_USER_FILE: /run/secrets/username_secret
-      POSTGRES_PASSWORD_FILE: /run/secrets/password_secret
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
       # use of subdir recommended when working with filesystem mountpoints
+      POSTGRES_DB: ${PGDATABASE}
       PGDATA: /var/lib/postgresql/data/pgdata
-    secrets:
-      - username_secret
-      - password_secret
     ports:
       - 5432:5432
     volumes:
@@ -22,7 +20,7 @@ services:
           nocopy: true
       - type: bind
         source: ./scripts
-        target: /opt/flows18/scripts/
+        target: /opt/sql/scripts/
 
   adminer:
     image: adminer
@@ -31,9 +29,3 @@ services:
 
 volumes:
   pgdata:
-
-secrets:
-  username_secret:
-    file: .user
-  password_secret:
-    file: .pass
