@@ -3,10 +3,10 @@ version: '3.7'
 services:
 
   db:
-    image: timescale/timescaledb-postgis:latest-pg11
+    image: timescale/timescaledb:latest-pg11
     environment:
       POSTGRES_USER_FILE: /run/secrets/username_secret
-      POSTGRES_PASSWORD_FILE: /run/secrets/password_secret      
+      POSTGRES_PASSWORD_FILE: /run/secrets/password_secret
       # use of subdir recommended when working with filesystem mountpoints
       PGDATA: /var/lib/postgresql/data/pgdata
     secrets:
