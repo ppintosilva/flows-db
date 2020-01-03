@@ -3,7 +3,7 @@
 ## Requirements
 
 **Software:**
-- docker
+- docker (increase docker's max disk image size as the default value is likely too low)
 - timescaledb-parallel-copy (requires go)
 - psql (libpq)
 - pipenv
