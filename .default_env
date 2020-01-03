@@ -1,4 +1,4 @@
-GO_PATH=.go
+GOPATH=.go
 DATA_DIR=data
 PGHOST=localhost
 PGPORT=5432
