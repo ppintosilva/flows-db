@@ -16,19 +16,19 @@ FLOWS_WEEK		:= $(FLOWS_WEEK_DIR)/weekly_flows.csv
 STATUS_DIR		:= .make
 
 FLOWS_5MIN_STATUS	:= 	$(patsubst $(FLOWS_5MIN_DIR)/%.csv, \
-						$(STATUS_DIR)/fivemin/%.ok, \
+						$(STATUS_DIR)/%.ok, \
 						$(FLOWS_5MIN))
 
 FLOWS_15MIN_STATUS	:= 	$(patsubst $(FLOWS_15MIN_DIR)/%.csv, \
-						$(STATUS_DIR)/fifteenmin/%.ok, \
+						$(STATUS_DIR)/%.ok, \
 						$(FLOWS_15MIN))
 
 FLOWS_HOUR_STATUS	:= 	$(patsubst $(FLOWS_HOUR_DIR)/%.csv, \
-						$(STATUS_DIR)/hourly/%.ok, \
+						$(STATUS_DIR)/%.ok, \
 						$(FLOWS_HOUR))
 
 FLOWS_DAY_STATUS	:= 	$(patsubst $(FLOWS_DAY_DIR)/%.csv, \
-						$(STATUS_DIR)/daily/%.ok, \
+						$(STATUS_DIR)/%.ok, \
 						$(FLOWS_DAY))
 
 FLOWS_WEEK_STATUS	:= $(STATUS_DIR)/weekly_flows.ok
@@ -81,16 +81,16 @@ $(STATUS_DIR) :
 
 $(TIMECOPY_BIN) :
 
-$(STATUS_DIR)/fivemin/%.ok : $(FLOWS_5MIN_DIR)/%.csv
+$(STATUS_DIR)/%.ok : $(FLOWS_5MIN_DIR)/%.csv
 	$(call populate-csv,od_05min) && touch $@
 
-$(STATUS_DIR)/fifteenmin/%.ok : $(FLOWS_15MIN_DIR)/%.csv
+$(STATUS_DIR)/%.ok : $(FLOWS_15MIN_DIR)/%.csv
 	$(call populate-csv,od_15min) && touch $@
 
-$(STATUS_DIR)/hourly/%.ok : $(FLOWS_HOUR_DIR)/%.csv
+$(STATUS_DIR)/%.ok : $(FLOWS_HOUR_DIR)/%.csv
 	$(call populate-csv,od_1hour) && touch $@
 
-$(STATUS_DIR)/daily/%.ok : $(FLOWS_DAY_DIR)/%.csv
+$(STATUS_DIR)/%.ok : $(FLOWS_DAY_DIR)/%.csv
 	$(call populate-csv,od_24hours) && touch $@
 
 $(FLOWS_WEEK_STATUS) : $(FLOWS_WEEK)
@@ -106,13 +106,13 @@ populate: $(STATUS_DIR) \
 
 EXPAND_ROWS_SQL		:= scripts/expand_rows.j2
 
-FLOWS_5MIN_EXSTATUS	:= 	$(STATUS_DIR)/fivemin/expanded_ok
+FLOWS_5MIN_EXSTATUS	:= 	$(STATUS_DIR)/fivemin_expanded_ok
 
-FLOWS_15MIN_EXSTATUS:= 	$(STATUS_DIR)/fifteenmin/expanded_ok
+FLOWS_15MIN_EXSTATUS:= 	$(STATUS_DIR)/fifteenmin_expanded_ok
 
-FLOWS_HOUR_EXSTATUS	:= 	$(STATUS_DIR)/hourly/expanded_ok
+FLOWS_HOUR_EXSTATUS	:= 	$(STATUS_DIR)/hourly_expanded_ok
 
-FLOWS_DAY_EXSTATUS	:= 	$(STATUS_DIR)/daily/expanded_ok
+FLOWS_DAY_EXSTATUS	:= 	$(STATUS_DIR)/daily_expanded_ok
 
 define expand-db
 	printf '{"table":"${1}","frequency":"${2} ${3}"}' | \
