@@ -21,6 +21,9 @@ services:
       - type: bind
         source: ./scripts
         target: /opt/sql/scripts/
+    deploy:
+      restart_policy:
+          condition: none
 
   adminer:
     image: adminer
