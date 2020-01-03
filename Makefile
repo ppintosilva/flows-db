@@ -13,7 +13,7 @@ FLOWS_HOUR		:= $(wildcard $(FLOWS_HOUR_DIR)/*.csv)
 FLOWS_DAY		:= $(wildcard $(FLOWS_DAY_DIR)/*.csv)
 FLOWS_WEEK		:= $(FLOWS_WEEK_DIR)/weekly_flows.csv
 
-STATUS_DIR		:= .populate_status
+STATUS_DIR		:= .make
 
 FLOWS_5MIN_STATUS	:= 	$(patsubst $(FLOWS_5MIN_DIR)/%.csv, \
 						$(STATUS_DIR)/fivemin/%.ok, \
@@ -68,7 +68,7 @@ __check_defined = \
 # ============================= #
 # ============================= #
 
-$(call check_defined,GOPATH,directory containing the flow data)
+$(call check_defined,GOPATH,directory containing the go binaries)
 $(call check_defined,DATA_DIR,directory containing the flow data)
 $(call check_defined,PGUSER,postgres username)
 $(call check_defined,PGPASSWORD,postgres password)
@@ -76,24 +76,28 @@ $(call check_defined,PGHOST,postgres host)
 $(call check_defined,PGPORT,postgres host)
 $(call check_defined,PGDATABASE,postgres database name)
 
+$(STATUS_DIR) :
+	mkdir -p $(STATUS_DIR)
+
 $(TIMECOPY_BIN) :
 
 $(STATUS_DIR)/fivemin/%.ok : $(FLOWS_5MIN_DIR)/%.csv
-	$(call populate-csv,od_05min)
+	$(call populate-csv,od_05min) && touch $@
 
 $(STATUS_DIR)/fifteenmin/%.ok : $(FLOWS_15MIN_DIR)/%.csv
-	$(call populate-csv,od_15min)
+	$(call populate-csv,od_15min) && touch $@
 
 $(STATUS_DIR)/hourly/%.ok : $(FLOWS_HOUR_DIR)/%.csv
-	$(call populate-csv,od_1hour)
+	$(call populate-csv,od_1hour) && touch $@
 
 $(STATUS_DIR)/daily/%.ok : $(FLOWS_DAY_DIR)/%.csv
-	$(call populate-csv,od_24hours)
+	$(call populate-csv,od_24hours) && touch $@
 
 $(FLOWS_WEEK_STATUS) : $(FLOWS_WEEK)
 	$(call populate-csv,od_7days)
 
-populate: $(TIMECOPY_BIN) $(FLOWS_5MIN_STATUS) $(FLOWS_15MIN_STATUS) \
+populate: $(STATUS_DIR) \
+		  $(TIMECOPY_BIN) $(FLOWS_5MIN_STATUS) $(FLOWS_15MIN_STATUS) \
 		  $(FLOWS_HOUR_STATUS) $(FLOWS_DAY_STATUS) $(FLOWS_WEEK_STATUS)
 
 
@@ -102,13 +106,13 @@ populate: $(TIMECOPY_BIN) $(FLOWS_5MIN_STATUS) $(FLOWS_15MIN_STATUS) \
 
 EXPAND_ROWS_SQL		:= scripts/expand_rows.j2
 
-FLOWS_5MIN_EXSTATUS	:= 	$(STATUS_DIR)/fivemin/.expanded_ok
+FLOWS_5MIN_EXSTATUS	:= 	$(STATUS_DIR)/fivemin/expanded_ok
 
-FLOWS_15MIN_EXSTATUS:= 	$(STATUS_DIR)/fifteenmin/.expanded_ok
+FLOWS_15MIN_EXSTATUS:= 	$(STATUS_DIR)/fifteenmin/expanded_ok
 
-FLOWS_HOUR_EXSTATUS	:= 	$(STATUS_DIR)/hourly/.expanded_ok
+FLOWS_HOUR_EXSTATUS	:= 	$(STATUS_DIR)/hourly/expanded_ok
 
-FLOWS_DAY_EXSTATUS	:= 	$(STATUS_DIR)/daily/.expanded_ok
+FLOWS_DAY_EXSTATUS	:= 	$(STATUS_DIR)/daily/expanded_ok
 
 define expand-db
 	printf '{"table":"${1}","frequency":"${2} ${3}"}' | \
@@ -117,16 +121,28 @@ define expand-db
 endef
 
 $(FLOWS_5MIN_EXSTATUS) : $(FLOWS_5MIN_STATUS)
-	$(call expand-db,od_05min,5,min)
+	$(call expand-db,od_05min,5,min) && touch $@
 
 $(FLOWS_15MIN_EXSTATUS) : $(FLOWS_15MIN_STATUS)
-	$(call expand-db,od_15min,15,min)
+	$(call expand-db,od_15min,15,min) && touch $@
 
 $(FLOWS_HOUR_EXSTATUS) : $(FLOWS_HOUR_STATUS)
-	$(call expand-db,od_1hour,1,hour)
+	$(call expand-db,od_1hour,1,hour) && touch $@
 
 $(FLOWS_DAY_EXSTATUS) : $(FLOWS_DAY_STATUS)
-	$(call expand-db,od_24hours,1,day)
+	$(call expand-db,od_24hours,1,day) && touch $@
 
 expand:   $(FLOWS_5MIN_EXSTATUS) $(FLOWS_15MIN_EXSTATUS) \
 		  $(FLOWS_HOUR_EXSTATUS) $(FLOWS_DAY_EXSTATUS)
+
+
+# ============================= #
+# ============================= #
+
+all:
+	@echo "Nope"
+
+reset:
+	rm -rf $(STATUS_DIR)
+
+.PHONY: all populate expand reset

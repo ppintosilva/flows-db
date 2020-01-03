@@ -1,3 +1,4 @@
 data*
 .env
-.go/
+.make
+.go
