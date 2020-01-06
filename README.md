@@ -26,7 +26,7 @@
 docker swarm init
 
 ## Deploy the containers
-docker stack deploy -c docker-compose.yml $(PGDATABASE)
+docker stack deploy -c docker-compose.yml $PGDATABASE
 ```
 
 ## Populating the database
@@ -51,5 +51,5 @@ make expand
 
 ```bash
 ## Shutdown the containers
-docker stack rm $(PGDATABASE)
+docker stack rm $PGDATABASE
 ```
