@@ -2,7 +2,8 @@ INSERT INTO
   agg_05min_weekdaycat (
     o,d,period,weekdaycat,sum_flow,median_flow,
     sum_mean_avspeed,median_mean_avspeed,
-    sum_sd_avspeed, median_sd_avspeed)
+    sum_sd_avspeed, median_sd_avspeed,
+    sum_median_avspeed, median_median_avspeed)
 (
   SELECT
       o

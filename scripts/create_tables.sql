@@ -55,6 +55,8 @@ CREATE TABLE agg_hour_weekday
   median_mean_avspeed NUMERIC,
   sum_sd_avspeed NUMERIC,
   median_sd_avspeed NUMERIC,
+  sum_median_avspeed NUMERIC,
+  median_median_avspeed NUMERIC,
   PRIMARY KEY(o,d,hour,weekday)
 );
 

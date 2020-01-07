@@ -1,7 +1,9 @@
 INSERT INTO
-  agg_hour_weekday (o,d,hour,weekday,sum_flow,median_flow,
-                    sum_mean_avspeed,median_mean_avspeed,
-                    sum_sd_avspeed, median_sd_avspeed)
+  agg_hour_weekday (
+    o,d,hour,weekday,sum_flow,median_flow,
+    sum_mean_avspeed,median_mean_avspeed,
+    sum_sd_avspeed, median_sd_avspeed,
+    sum_median_avspeed, median_median_avspeed)
 (
   SELECT
       o
