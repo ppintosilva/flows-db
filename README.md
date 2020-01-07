@@ -41,10 +41,8 @@ psql -f scripts/create_tables.sql
 ## Populate the database
 make populate
 
-## Expand
-make expand
-
-## Run additional aggregation queries
+## Run total aggregation queries
+make aggregation
 ```
 
 ## Shutting down

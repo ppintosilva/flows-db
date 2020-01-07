@@ -104,41 +104,6 @@ populate: $(STATUS_DIR) \
 # ============================= #
 # ============================= #
 
-EXPAND_ROWS_SQL		:= scripts/expand_rows.j2
-
-FLOWS_5MIN_EXSTATUS	:= 	$(STATUS_DIR)/fivemin_expanded_ok
-
-FLOWS_15MIN_EXSTATUS:= 	$(STATUS_DIR)/fifteenmin_expanded_ok
-
-FLOWS_HOUR_EXSTATUS	:= 	$(STATUS_DIR)/hourly_expanded_ok
-
-FLOWS_DAY_EXSTATUS	:= 	$(STATUS_DIR)/daily_expanded_ok
-
-define expand-db
-	printf '{"table":"${1}","frequency":"${2} ${3}"}' | \
-	pipenv run j2 -f json ${EXPAND_ROWS_SQL} | \
-	xargs -I {} psql -c "{}"
-endef
-
-$(FLOWS_5MIN_EXSTATUS) : $(FLOWS_5MIN_STATUS)
-	$(call expand-db,od_05min,5,min) && touch $@
-
-$(FLOWS_15MIN_EXSTATUS) : $(FLOWS_15MIN_STATUS)
-	$(call expand-db,od_15min,15,min) && touch $@
-
-$(FLOWS_HOUR_EXSTATUS) : $(FLOWS_HOUR_STATUS)
-	$(call expand-db,od_1hour,1,hour) && touch $@
-
-$(FLOWS_DAY_EXSTATUS) : $(FLOWS_DAY_STATUS)
-	$(call expand-db,od_24hours,1,day) && touch $@
-
-expand:   $(FLOWS_5MIN_EXSTATUS) $(FLOWS_15MIN_EXSTATUS) \
-		  $(FLOWS_HOUR_EXSTATUS) $(FLOWS_DAY_EXSTATUS)
-
-
-# ============================= #
-# ============================= #
-
 AGG_1	:=	$(STATUS_DIR)/agg_hour_weekday.ok
 
 AGG_2	:= 	$(STATUS_DIR)/agg_05min_weekdaycat.ok
