@@ -90,6 +90,28 @@ CREATE TABLE agg_15min_weekdaycat
 
 --- Functions
 
+-- median
+CREATE OR REPLACE FUNCTION _final_median(NUMERIC[])
+   RETURNS NUMERIC AS
+$$
+   SELECT AVG(val)
+   FROM (
+     SELECT val
+     FROM unnest($1) val
+     ORDER BY 1
+     LIMIT  2 - MOD(array_upper($1, 1), 2)
+     OFFSET CEIL(array_upper($1, 1) / 2.0) - 1
+   ) sub;
+$$
+LANGUAGE 'sql' IMMUTABLE;
+
+CREATE AGGREGATE median(NUMERIC) (
+  SFUNC=array_append,
+  STYPE=NUMERIC[],
+  FINALFUNC=_final_median,
+  INITCOND='{}'
+);
+
 -- function that takes a day of the week and squashes into weekday/sat/sunday
 CREATE FUNCTION dowcat(d INTEGER) RETURNS INTEGER AS
 $$
