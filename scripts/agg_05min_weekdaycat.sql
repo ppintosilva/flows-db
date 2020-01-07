@@ -22,4 +22,5 @@ INSERT INTO
   GROUP BY o,d,weekdaycat,period
   ORDER BY o,d,weekdaycat,period
 )
+ON CONFLICT DO NOTHING/UPDATE
 ;
