@@ -139,6 +139,28 @@ expand:   $(FLOWS_5MIN_EXSTATUS) $(FLOWS_15MIN_EXSTATUS) \
 # ============================= #
 # ============================= #
 
+AGG_1	:=	$(STATUS_DIR)/agg_hour_weekday.ok
+
+AGG_2	:= 	$(STATUS_DIR)/agg_05min_weekdaycat.ok
+
+AGG_3	:= 	$(STATUS_DIR)/agg_15min_weekdaycat.ok
+
+$(AGG_1) : $(FLOWS_HOUR_STATUS)
+	psql -f scripts/agg_hour_weekday.sql && touch $@
+
+$(AGG_2) : $(FLOWS_5MIN_STATUS)
+	psql -f scripts/agg_05min_weekdaycat.sql && touch $@
+
+$(AGG_3) : $(FLOWS_15MIN_STATUS)
+	psql -f scripts/agg_15min_weekdaycat.sql && touch $@
+
+aggregate:
+	$(AGG_1) $(AGG_2) $(AGG_3)
+
+# ============================= #
+# ============================= #
+
+
 all:
 	@echo "Nope"
 
