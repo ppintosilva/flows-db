@@ -4,9 +4,9 @@ CREATE TABLE od_05min
   d INTEGER NOT NULL,
   t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
   flow INTEGER,
+  median_avspeed NUMERIC,
   mean_avspeed NUMERIC,
   sd_avspeed NUMERIC,
-  skew_avspeed NUMERIC,
   PRIMARY KEY(o,d,t)
 );
 
@@ -35,8 +35,71 @@ ALTER TABLE od_total ADD PRIMARY KEY (o,d,t);
 -- --   + Q2: how much memory can my server allocate to the database?
 
 SELECT create_hypertable('od_05min'  , 't', chunk_time_interval => interval '1 month');
-SELECT create_hypertable('od_15min'  , 't', chunk_time_interval => interval '1 month');
-SELECT create_hypertable('od_1hour'  , 't', chunk_time_interval => interval '1 month');
-SELECT create_hypertable('od_24hours', 't', chunk_time_interval => interval '1 month');
-SELECT create_hypertable('od_7days'  , 't', chunk_time_interval => interval '1 month');
-SELECT create_hypertable('od_total'  , 't', chunk_time_interval => interval '1 month');
+SELECT create_hypertable('od_15min'  , 't', chunk_time_interval => interval '2 months');
+SELECT create_hypertable('od_1hour'  , 't', chunk_time_interval => interval '4 months');
+SELECT create_hypertable('od_24hours', 't', chunk_time_interval => interval '12 months');
+SELECT create_hypertable('od_7days'  , 't', chunk_time_interval => interval '12 months');
+
+
+--- Aggregate tables
+
+CREATE TABLE agg_hour_weekday
+(
+  o INTEGER NOT NULL,
+  d INTEGER NOT NULL,
+  hour INTEGER NOT NULL,
+  weekday INTEGER NOT NULL,
+  sum_flow INTEGER,
+  median_flow NUMERIC,
+  sum_mean_avspeed NUMERIC,
+  median_mean_avspeed NUMERIC,
+  sum_sd_avspeed NUMERIC,
+  median_sd_avspeed NUMERIC,
+  PRIMARY KEY(o,d,hour,weekday)
+);
+
+CREATE TABLE agg_05min_weekdaycat
+(
+  o INTEGER NOT NULL,
+  d INTEGER NOT NULL,
+  period TIME NOT NULL,
+  weekdaycat INTEGER NOT NULL,
+  sum_flow INTEGER,
+  median_flow NUMERIC,
+  sum_mean_avspeed NUMERIC,
+  median_mean_avspeed NUMERIC,
+  sum_sd_avspeed NUMERIC,
+  median_sd_avspeed NUMERIC,
+  PRIMARY KEY(o,d,period,weekdaycat)
+);
+
+CREATE TABLE agg_15min_weekdaycat
+(
+  o INTEGER NOT NULL,
+  d INTEGER NOT NULL,
+  period TIME NOT NULL,
+  weekdaycat INTEGER NOT NULL,
+  sum_flow INTEGER,
+  median_flow NUMERIC,
+  sum_mean_avspeed NUMERIC,
+  median_mean_avspeed NUMERIC,
+  sum_sd_avspeed NUMERIC,
+  median_sd_avspeed NUMERIC,
+  PRIMARY KEY(o,d,period,weekdaycat)
+);
+
+--- Functions
+
+-- function that takes a day of the week and squashes into weekday/sat/sunday
+CREATE FUNCTION dowcat(d INTEGER) RETURNS INTEGER AS
+$$
+  BEGIN
+    IF d = 0 THEN
+      RETURN 1;
+    ELSIF d = 6 THEN
+      RETURN 2;
+    ELSE
+      RETURN 0;
+    END IF;
+  END
+$$ LANGUAGE plpgsql;
