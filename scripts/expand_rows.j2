@@ -1,14 +1,14 @@
 INSERT INTO
-  {{ table }} (o,d,t,flow,mean_avspeed,sd_avspeed,skew_avspeed)
+  {{ table }} (o,d,t,count,median_speed,mean_speed,sd_speed)
   (
     SELECT
         combinations.o
       , combinations.d
       , combinations.t
-      , 0 AS flow
-      , NULL AS mean_avspeed
-      , NULL AS sd_avspeed
-      , NULL AS skew_avspeed
+      , 0 AS count
+      , NULL AS median_speed
+      , NULL AS mean_speed
+      , NULL AS sd_speed
     FROM
     (
       SELECT
