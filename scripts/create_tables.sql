@@ -14,7 +14,7 @@ CREATE TABLE flows05m
 -- NOT NULL constraint on t does not carry on so enforce it
 
 CREATE TABLE flows15m   AS (SELECT * FROM flows05m) WITH NO DATA;
-ALTER TABLE flows_15m ADD PRIMARY KEY (o,d,t);
+ALTER TABLE flows15m ADD PRIMARY KEY (o,d,t);
 
 CREATE TABLE flows1h   AS (SELECT * FROM flows05m) WITH NO DATA;
 ALTER TABLE flows1h ADD PRIMARY KEY (o,d,t);
