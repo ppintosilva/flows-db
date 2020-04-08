@@ -1,4 +1,19 @@
+# any data folders and subfolders
 data*
+
+# the actual environment dotfiles
 .env
+.pgpass
+
+# the makefile status folder
 .make
+
+# go binaries
 .go
+
+# osx
+.DS_Store
+
+# database dumps
+*.bak
+
