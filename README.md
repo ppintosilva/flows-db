@@ -92,8 +92,8 @@ You may instead create and your own tables and populate them in a similar way.
 
 ## Inspecting the database
 
-The container stack inclues an adminer instance on [localhost:8080] which
-can be used to browse the database through a GUI instead of the terminal.
+The container stack also boots up an adminer instance on http://localhost:8080
+which can be used to browse the database through a GUI instead.
 
 ## Shutting down
 
